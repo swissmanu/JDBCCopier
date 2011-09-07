@@ -40,7 +40,9 @@ public class JDBCCopier {
 		String sourceConnectionString = properties.getProperty("source.connectionString", "");
 		String targetType = properties.getProperty("source.type", "");
 		String targetConnectionString = properties.getProperty("target.connectionString", "");
+		String nameFilters = properties.getProperty("namefilters", "");
 		int maxWorkers = new Integer(properties.getProperty("maxworkers","-1")).intValue();
+		List<String> nameFilter = getNameFilter(nameFilters);
 		
 		// Check config:
 		if(sourceType.length() == 0 || sourceConnectionString.length() == 0
@@ -61,7 +63,6 @@ public class JDBCCopier {
 			Database it = new MSSQLDatabase(sourceConnectionString);
 			it.connect();
 			
-			List<String> nameFilter = getNameFilter();
 			Queue<Table> pool = new ConcurrentLinkedQueue<Table>(it.getTables(nameFilter));
 			final List<Thread> workers = new ArrayList<Thread>(maxWorkers+1);
 			List<WorkerStatusPanel> statusPanels = new ArrayList<WorkerStatusPanel>(maxWorkers+1);
@@ -115,32 +116,39 @@ public class JDBCCopier {
 		}
 	}
 	
-	private static List<String> getNameFilter() {
-		List<String> filters = new ArrayList<String>();
+	/**
+	 * Splits a comma seperated {@link String} with {@link Table}-names and
+	 * returns a {@link List} with each.
+	 * 
+	 * @param nameFilters
+	 * @return
+	 */
+	private static List<String> getNameFilter(String nameFilters) {
+		String[] raw = nameFilters.split(",");
+		List<String> filters = new ArrayList<String>(raw.length);
 		
-		filters.add("AttachmentData");
-		filters.add("AuditSubmission");
-		filters.add("AuditUserDetails");
-		filters.add("ConditionComment");
-		filters.add("ConditionGroup");
-		filters.add("Division");
-		filters.add("MessageQueue");
-		filters.add("OracleAttachment");
-		filters.add("OracleUser");
-		filters.add("OracleUserDetails");
-		filters.add("Region");
-		filters.add("SubmissionIDAllocation");
-		filters.add("SubmissionStatusActionRoleBackup3");
-		filters.add("SubmissionUserRole");
-		filters.add("UserRole");
+		for (String filter : raw) {
+			filters.add(filter);
+		}
 		
 		return filters;
 	}
 	
+	/**
+	 * Tries to load the default config file.
+	 * 
+	 * @return
+	 */
 	private static Properties loadProperties() {
 		return loadProperties("config.properties");
 	}
 	
+	/**
+	 * Loads a specific config file.
+	 * 
+	 * @param configFile
+	 * @return
+	 */
 	private static Properties loadProperties(String configFile) {
 		Properties props = new Properties();
 		
