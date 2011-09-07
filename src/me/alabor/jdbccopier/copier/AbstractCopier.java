@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.alabor.jdbccopier.copier.listener.CopierListener;
+import me.alabor.jdbccopier.database.Database;
+import me.alabor.jdbccopier.database.Mode;
 import me.alabor.jdbccopier.database.meta.Field;
 import me.alabor.jdbccopier.database.meta.FieldType;
 import me.alabor.jdbccopier.database.meta.Table;
@@ -13,9 +15,43 @@ import me.alabor.jdbccopier.database.meta.Table;
 public abstract class AbstractCopier implements Copier {
 
 	private List<CopierListener> listeners = new ArrayList<CopierListener>();
+	private Database source = null;
+	private Database target = null;
 
-	public AbstractCopier() {
+	public AbstractCopier(Database source, Database target) {
 		super();
+		this.source = source;
+		this.target = target;
+	}
+	
+	@Override
+	public void copy() {
+		if(checkConnections()) {
+			fireStartCopy();
+			
+			source.beforeCopy(Mode.Source);
+			target.beforeCopy(Mode.Target);
+			Table table = null;
+			
+			while((table = getNextTable()) != null) {
+				long totalRows = source.countContentsForTable(table);
+				
+				fireStartCopyTable(table, totalRows);
+				
+				target.beforeTableCopy(table, Mode.Target);
+				copyTableContents(table);
+				target.afterTableCopy(table, Mode.Target);
+				
+				fireEndCopyTable(table);				
+			}
+			
+			source.afterCopy(Mode.Source);
+			target.afterCopy(Mode.Target);
+		} else {
+			fireError(null, new Exception("Connection problems"));
+		}
+		
+		fireEndCopy(0,0);
 	}
 	
 	@Override
@@ -50,6 +86,49 @@ public abstract class AbstractCopier implements Copier {
 		}
 		
 		return statement;
+	}
+	
+	/**
+	 * Checks the database connection in source and target.
+	 * 
+	 * @return true/false regarding the connection states
+	 */
+	private boolean checkConnections() {
+		boolean result = true;
+		try {
+			source.connect();
+			target.connect();
+		} catch(Exception e) {
+			e.printStackTrace();
+			result = false;
+		}
+		
+		return result;
+	}
+
+	/**
+	 * Copies the contents of a table from source to target {@link Database}.
+	 * 
+	 * @param table
+	 */
+	private void copyTableContents(Table table) {
+		int totalRowsOnSource = source.countContentsForTable(table);
+		int totalProcessed = 0;
+		
+		try {
+			PreparedStatement targetStatement = target.buildPreparedInsertStatement(table);
+			ResultSet sourceContents = source.getContentsForTable(table);
+			
+			while(sourceContents.next()) {
+				totalProcessed++;
+				fireCopyTableStatus(table, totalProcessed, totalRowsOnSource);
+				
+				targetStatement = setPreparedStatementParameters(targetStatement, table, sourceContents);
+				targetStatement.execute();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

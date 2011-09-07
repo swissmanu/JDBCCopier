@@ -16,7 +16,7 @@ import javax.swing.JTabbedPane;
 import me.alabor.jdbccopier.copier.AbstractCopier;
 import me.alabor.jdbccopier.copier.Copier;
 import me.alabor.jdbccopier.copier.CopierTask;
-import me.alabor.jdbccopier.copier.DefaultCopier;
+import me.alabor.jdbccopier.copier.TableListCopier;
 import me.alabor.jdbccopier.database.Database;
 import me.alabor.jdbccopier.database.MSSQLDatabase;
 import me.alabor.jdbccopier.database.meta.Table;
@@ -36,7 +36,7 @@ public class JDBCCopier {
 			List<Table> tables = it.getTables();
 			
 			List<Table> copierPackage = new ArrayList<Table>();
-			final List<DefaultCopier> copiers = new ArrayList<DefaultCopier>();
+			final List<TableListCopier> copiers = new ArrayList<TableListCopier>();
 			for(int i = 0, l = tables.size(); i < l; i++) {
 				Table table = tables.get(i);
 				copierPackage.add(table);
@@ -44,7 +44,7 @@ public class JDBCCopier {
 				if(copierPackage.size() >= 8) {
 					Database source = new MSSQLDatabase(SOURCE);
 					Database target = new MSSQLDatabase(TARGET);
-					DefaultCopier copier = new DefaultCopier(source, target, copierPackage);
+					TableListCopier copier = new TableListCopier(source, target, copierPackage);
 					copiers.add(copier);
 					copierPackage = new ArrayList<Table>();
 				}
@@ -53,7 +53,7 @@ public class JDBCCopier {
 			if(copierPackage.size() > 0 && copierPackage.size() <= 8) {
 				Database source = new MSSQLDatabase(SOURCE);
 				Database target = new MSSQLDatabase(TARGET);
-				DefaultCopier copier = new DefaultCopier(source, target, copierPackage);
+				TableListCopier copier = new TableListCopier(source, target, copierPackage);
 				copiers.add(copier);
 				copierPackage = new ArrayList<Table>();
 			}
