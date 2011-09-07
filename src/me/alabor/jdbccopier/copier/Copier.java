@@ -73,21 +73,20 @@ public class Copier extends AbstractCopier {
 	}
 	
 	private void copyTableContents(Table table) {
-		int totalRowsOnSource = source.countContentsForTable(table); 
-		int current = 0;
+		int totalRowsOnSource = source.countContentsForTable(table);
+		int totalProcessed = 0;
 		
 		try {
 			PreparedStatement targetStatement = target.buildPreparedInsertStatement(table);
 			ResultSet sourceContents = source.getContentsForTable(table);
 			
 			while(sourceContents.next()) {
-				current++;
-				fireCopyTableStatus(table, current, totalRowsOnSource);
+				totalProcessed++;
+				fireCopyTableStatus(table, totalProcessed, totalRowsOnSource);
 				
 				targetStatement = setPreparedStatementParameters(targetStatement, table, sourceContents);
 				targetStatement.execute();
 			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
