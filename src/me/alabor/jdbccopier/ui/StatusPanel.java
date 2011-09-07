@@ -34,7 +34,7 @@ public class StatusPanel extends JPanel implements CopierListener{
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				txtLog.setText(txtLog.getText() + "\n" + text);
+				txtLog.setText(txtLog.getText() + text + "\n");
 				txtLog.setCaretPosition(txtLog.getText().length());
 			}
 		});
@@ -75,11 +75,12 @@ public class StatusPanel extends JPanel implements CopierListener{
 	
 	@Override
 	public void startCopy(List<Table> tables) {
-		StringBuffer text = new StringBuffer("Will copy following tables:");
+		StringBuffer text = new StringBuffer("Copy following tables:");
 		for (Table table : tables) {
+			text.append("\n- ");
 			text.append(table);
-			text.append("\n");
 		}
+		text.append("\n");
 		addLog(text.toString());
 	}
 	

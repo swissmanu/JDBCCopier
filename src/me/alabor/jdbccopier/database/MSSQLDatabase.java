@@ -213,7 +213,7 @@ public class MSSQLDatabase implements Database {
 		List<Field> fields = new ArrayList<Field>();
 		
 		try {
-			String query = "SELECT COLUMN_NAME, DATA_TYPE FROM information_schema.columns WHERE TABLE_SCHEMA=?, TABLE_NAME=?";
+			String query = "SELECT COLUMN_NAME, DATA_TYPE FROM information_schema.columns WHERE TABLE_SCHEMA=? AND TABLE_NAME=?";
 			PreparedStatement statement = getConnection().prepareStatement(query);
 			statement.setString(1, table.getSchema());
 			statement.setString(2, table.getName());
