@@ -8,8 +8,9 @@ public interface CopierListener {
 	 * Notifies that the {@link Copier} begins now to copy the {@link Table} table
 	 * 
 	 * @param table
+	 * @param totalRows
 	 */
-	public void startCopyTable(Table table);
+	public void startCopyTable(Table table, long totalRows);
 	
 	/**
 	 * Provides information about the progress during copying the {@link Table}

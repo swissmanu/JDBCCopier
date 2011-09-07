@@ -23,9 +23,9 @@ public class AbstractCopier {
 		listeners.remove(copierListener);
 	}
 	
-	protected void fireStartCopyTable(Table table) {
+	protected void fireStartCopyTable(Table table, long totalRows) {
 		for (CopierListener listener : listeners) {
-			listener.startCopyTable(table);
+			listener.startCopyTable(table, totalRows);
 		}
 	}
 

@@ -39,7 +39,9 @@ public class Copier extends AbstractCopier {
 			target.beforeCopy(Mode.Target);
 			for (int i = 0, l = tables.size(); i < l; i++) {
 				Table table = tables.get(i);
-				fireStartCopyTable(table);
+				long totalRows = source.countContentsForTable(table);
+				
+				fireStartCopyTable(table, totalRows);
 				
 				target.beforeTableCopy(table, Mode.Target);
 				copyTableContents(table);
@@ -122,7 +124,7 @@ public class Copier extends AbstractCopier {
 					|| type == FieldType.Timestamp) {
 				statement.setDate(parameterIndex, contents.getDate(field.getName()));
 			} else if(type == FieldType.BitVarying) {
-				statement.setBinaryStream(parameterIndex, contents.getBinaryStream(field.getName()));
+				statement.setBytes(parameterIndex, contents.getBytes(field.getName()));
 			} else if(type == FieldType.Integer) {
 				statement.setInt(parameterIndex, contents.getInt(field.getName()));
 			} else if(type == FieldType.Numeric) {

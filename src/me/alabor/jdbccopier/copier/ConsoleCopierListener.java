@@ -7,8 +7,8 @@ public class ConsoleCopierListener implements CopierListener {
 	private int percentageDone = 0;
 	
 	@Override
-	public void startCopyTable(Table table) {
-		System.out.println("Copy table " + table);
+	public void startCopyTable(Table table, long totalRows) {
+		System.out.println("Copy table " + table + " (" + totalRows + " rows)");
 		percentageDone = 0;
 	}
 

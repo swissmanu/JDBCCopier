@@ -23,13 +23,13 @@ public class JDBCCopier {
 		try {
 			it.connect();
 			
-			Table table = new Table("dbo","DefaultPreference");
-			table.addField(new Field("ID",it.mapFieldType("bigint")));
-			table.addField(new Field("Name",it.mapFieldType("varchar")));
-			table.addField(new Field("Value",it.mapFieldType("text")));
-			table.addField(new Field("GroupName",it.mapFieldType("varchar")));
-			table.addField(new Field("PreferenceType",it.mapFieldType("varchar")));
-			table.addField(new Field("DefaultValue",it.mapFieldType("bit")));
+			Table table = new Table("dbo","OracleAttachment");
+			table.addField(new Field("AttachmentID",it.mapFieldType("uniqueidentifier")));
+			table.addField(new Field("AttachmentPath",it.mapFieldType("varchar")));
+			table.addField(new Field("AttachmentName",it.mapFieldType("varchar")));
+			table.addField(new Field("MIMEType",it.mapFieldType("varchar")));
+			table.addField(new Field("ImageData",it.mapFieldType("varbinary")));
+			table.addField(new Field("DateUploaded",it.mapFieldType("datetime")));
 			List<Table> tables = new ArrayList<Table>();
 			tables.add(table);
 			copier.setTablesToCopy(tables);
