@@ -94,7 +94,6 @@ public class JDBCCopier {
 		}
 	}
 	
-	
 	private static List<String> getNameFilter() {
 		List<String> filters = new ArrayList<String>();
 		
