@@ -1,5 +1,7 @@
 package me.alabor.jdbccopier.copier;
 
+import java.util.List;
+
 import me.alabor.jdbccopier.database.meta.Table;
 
 public class ConsoleCopierListener implements CopierListener {
@@ -33,6 +35,12 @@ public class ConsoleCopierListener implements CopierListener {
 		System.out.println("-------------------------------------------");
 	}
 
+	@Override
+	public void startCopy(List<Table> tables) {
+		System.out.println("Start copy " + tables.size() + " tables");
+		System.out.println("===========================================");
+	}
+	
 	@Override
 	public void endCopy(int totalSuccess, int totalError) {
 		System.out.println("===========================================");

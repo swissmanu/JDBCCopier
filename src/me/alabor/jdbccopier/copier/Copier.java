@@ -34,6 +34,7 @@ public class Copier extends AbstractCopier {
 	public void copy() {
 		if(checkConnections()) {
 			List<Table> tables = getTablesToCopy();
+			fireStartCopy(tables);
 			
 			source.beforeCopy(Mode.Source);
 			target.beforeCopy(Mode.Target);
@@ -51,6 +52,8 @@ public class Copier extends AbstractCopier {
 			}
 			source.afterCopy(Mode.Source);
 			target.afterCopy(Mode.Target);
+		} else {
+			fireError(null, new Exception("Connection problems"));
 		}
 		
 		fireEndCopy(0,0);

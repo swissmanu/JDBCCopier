@@ -1,5 +1,7 @@
 package me.alabor.jdbccopier.copier;
 
+import java.util.List;
+
 import me.alabor.jdbccopier.database.meta.Table;
 
 public interface CopierListener {
@@ -37,6 +39,13 @@ public interface CopierListener {
 	 * @param table
 	 */
 	public void endCopyTable(Table table);
+	
+	/**
+	 * Indicates that the copy of tables will begin.
+	 * 
+	 * @param tables
+	 */
+	public void startCopy(List<Table> tables);
 	
 	/**
 	 * Notifies that the {@link Copier} has completed its actions.

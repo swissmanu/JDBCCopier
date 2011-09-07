@@ -47,6 +47,12 @@ public class AbstractCopier {
 		}
 	}
 	
+	protected void fireStartCopy(List<Table> tables) {
+		for (CopierListener listener : listeners) {
+			listener.startCopy(tables);
+		}
+	}	
+	
 	protected void fireEndCopy(int totalSuccess, int totalError) {
 		for (CopierListener listener : listeners) {
 			listener.endCopy(totalSuccess, totalError);
