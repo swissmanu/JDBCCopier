@@ -25,6 +25,10 @@ public abstract class AbstractCopier implements Copier {
 	}
 	
 	@Override
+	/**
+	 * Copies the contents of the tables in <code>source</code> into the matching
+	 * tables of <code>target</code>.
+	 */
 	public void copy() {
 		if(checkConnections()) {
 			fireStartCopy();
@@ -133,46 +137,90 @@ public abstract class AbstractCopier implements Copier {
 	
 	
 	// Event-Handling ----------------------------------------------------------
+	/**
+	 * Adds, if not already added, a new {@link CopierListener} to this
+	 * {@link Copier}.
+	 * 
+	 * @param copierListener
+	 */
 	public void addCopierListener(CopierListener copierListener) {
 		if(!listeners.contains(copierListener)) {
 			listeners.add(copierListener);
 		}
 	}
 
+	/**
+	 * Removes a {@link CopierListener} from this {@link Copier}.
+	 * 
+	 * @param copierListener
+	 */
 	public void removeCopierListener(CopierListener copierListener) {
 		listeners.remove(copierListener);
 	}
 	
+	/**
+	 * Fires a StartCopyTable event to all attached {@link CopierListener}'s.
+	 * 
+	 * @param table
+	 * @param totalRows
+	 */
 	protected void fireStartCopyTable(Table table, long totalRows) {
 		for (CopierListener listener : listeners) {
 			listener.startCopyTable(table, totalRows);
 		}
 	}
 
+	/**
+	 * Fires a CopyTableStatus event to all attached {@link CopierListener}'s.
+	 * 
+	 * @param table
+	 * @param currentPos
+	 * @param totalRows
+	 */
 	protected void fireCopyTableStatus(Table table, long currentPos, long totalRows) {
 		for (CopierListener listener : listeners) {
 			listener.copyTableStatus(table, currentPos, totalRows);
 		}
 	}
 
+	/**
+	 * Fires an Error event to all attached {@link CopierListener}'s.
+	 * 
+	 * @param table
+	 * @param error
+	 */
 	protected void fireError(Table table, Exception error) {
 		for (CopierListener listener : listeners) {
 			listener.error(table, error);
 		}
 	}
 	
+	/**
+	 * Fires an EndCopyTable event to all attached {@link CopierListener}'s.
+	 * 
+	 * @param table
+	 */
 	protected void fireEndCopyTable(Table table) {
 		for (CopierListener listener : listeners) {
 			listener.endCopyTable(table);
 		}
 	}
 	
+	/**
+	 * Fires a StartCopy event to all attached {@link CopierListener}'s.
+	 */
 	protected void fireStartCopy() {
 		for (CopierListener listener : listeners) {
 			listener.startCopy();
 		}
-	}	
+	}
 	
+	/**
+	 * Fires an EndCopy event to all attached {@link CopierListener}'s.
+	 * 
+	 * @param totalSuccess
+	 * @param totalError
+	 */
 	protected void fireEndCopy(int totalSuccess, int totalError) {
 		for (CopierListener listener : listeners) {
 			listener.endCopy(totalSuccess, totalError);
