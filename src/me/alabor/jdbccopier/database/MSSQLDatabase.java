@@ -42,8 +42,14 @@ public class MSSQLDatabase implements Database {
 	
 	@Override
 	public List<Table> getTables() {
+		return getTables(new ArrayList<String>(0));
+	}
+	
+	@Override
+	public List<Table> getTables(List<String> nameFilter) {
+		String filter = prepareTableNameFilter(nameFilter);
 		List<Table> tables = new ArrayList<Table>();
-		String query = "SELECT TABLE_NAME, TABLE_SCHEMA FROM information_schema.tables WHERE TABLE_TYPE=?";
+		String query = "SELECT TABLE_NAME, TABLE_SCHEMA FROM information_schema.tables WHERE TABLE_TYPE=?" + filter;
 		String tableType = "BASE TABLE";
 		
 		try {
@@ -201,6 +207,30 @@ public class MSSQLDatabase implements Database {
 	
 	private void setConnection(Connection connection) {
 		this.connection = connection;
+	}
+	
+	/**
+	 * Creates a {@link String} for table name filtering.
+	 * 
+	 * @param nameFilters
+	 * @return
+	 */
+	private String prepareTableNameFilter(List<String> nameFilters) {
+		String filter = "";
+		
+		if(nameFilters.size() > 0) {
+			StringBuffer buffer = new StringBuffer(" AND TABLE_NAME IN(");
+			for(int i = 0, l = nameFilters.size(); i < l; i++) {
+				if(i > 0) buffer.append(",");
+				buffer.append("'");
+				buffer.append(nameFilters.get(i));
+				buffer.append("'");
+			}
+			buffer.append(")");
+			filter = buffer.toString();
+		}
+		
+		return filter;
 	}
 	
 	/**

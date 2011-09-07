@@ -27,6 +27,15 @@ public interface Database {
 	public List<Table> getTables();
 	
 	/**
+	 * Same as {@link #getTables()}, but with the possibility to pass a {@link List}
+	 * with {@link String}'s which are used to filter the tables.
+	 * 
+	 * @param nameFilter
+	 * @return
+	 */
+	public List<Table> getTables(List<String> nameFilter);
+	
+	/**
 	 * Counts the total rows on the {@link Table} table.
 	 * 
 	 * @param table

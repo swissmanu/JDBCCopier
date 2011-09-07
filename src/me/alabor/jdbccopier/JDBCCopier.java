@@ -31,16 +31,20 @@ public class JDBCCopier {
 	private final static int MAX_WORKERS = 5;
 	private final static String SOURCE = "jdbc:sqlserver://CHSA1639.eur.beluni.net\\TZUPBRRI01;database=RepRisk;integratedSecurity=true;";
 	private final static String TARGET = "jdbc:sqlserver://localhost;database=RepRiskLocal;integratedSecurity=true;";
+	//private final static String SOURCE = "jdbc:sqlserver://localhost;database=RepRiskLocal;integratedSecurity=true;";
+	//private final static String TARGET = "jdbc:sqlserver://localhost;database=Test;integratedSecurity=true;";
 		
 	public static void main(String[] args) throws InterruptedException {
 		
 		try {
 			Database it = new MSSQLDatabase(SOURCE);
 			it.connect();
-			Queue<Table> pool = new ConcurrentLinkedQueue<Table>(it.getTables());
+			
+			List<String> nameFilter = getNameFilter();
+			Queue<Table> pool = new ConcurrentLinkedQueue<Table>(it.getTables(nameFilter));
 			final List<Thread> workers = new ArrayList<Thread>(MAX_WORKERS+1);
 			List<WorkerStatusPanel> statusPanels = new ArrayList<WorkerStatusPanel>(MAX_WORKERS+1);
-			ConsoleCopierListener console = new ConsoleCopierListener();
+			ConsoleCopierListener console = new ConsoleCopierListener(false);
 			
 			/* Create Workers & Statuspanels: */
 			for(int i = 0; i < MAX_WORKERS; i++) {
@@ -85,87 +89,33 @@ public class JDBCCopier {
 			frame.setContentPane(contentPane);
 			frame.setVisible(true);
 			
-			
-			
-			/*
-			List<Table> copierPackage = new ArrayList<Table>();
-			final List<TableListCopier> copiers = new ArrayList<TableListCopier>();
-			for(int i = 0, l = tables.size(); i < l; i++) {
-				Table table = tables.get(i);
-				copierPackage.add(table);
-				
-				if(copierPackage.size() >= 8) {
-					Database source = new MSSQLDatabase(SOURCE);
-					Database target = new MSSQLDatabase(TARGET);
-					TableListCopier copier = new TableListCopier(source, target, copierPackage);
-					copiers.add(copier);
-					copierPackage = new ArrayList<Table>();
-				}
-			}
-			
-			if(copierPackage.size() > 0 && copierPackage.size() <= 8) {
-				Database source = new MSSQLDatabase(SOURCE);
-				Database target = new MSSQLDatabase(TARGET);
-				TableListCopier copier = new TableListCopier(source, target, copierPackage);
-				copiers.add(copier);
-				copierPackage = new ArrayList<Table>();
-			}
-			
-			
-			JFrame frame = new JFrame("JDBCCopier");
-			frame.setMinimumSize(new Dimension(600,500));
-			frame.setSize(frame.getMinimumSize());
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			
-			JTabbedPane tbpTabs = new JTabbedPane();
-			final JButton btnStart = new JButton("Start");
-			btnStart.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					btnStart.setEnabled(false);
-					
-					for(Copier copier : copiers) {
-						Thread t = new Thread(new CopierTask(copier));
-						t.start();
-					}
-				}
-			});
-			
-			
-			for (AbstractCopier copier : copiers) {
-				StatusPanel status = new StatusPanel();
-				copier.addCopierListener(status);
-				tbpTabs.addTab("Copier",status);
-			}
-
-			JPanel contentPane = new JPanel(new BorderLayout());
-			contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-			contentPane.add(tbpTabs, BorderLayout.CENTER);
-			contentPane.add(btnStart, BorderLayout.SOUTH);
-			
-			frame.setContentPane(contentPane);
-			frame.setVisible(true);
-			*/
-		
-//			Table table = new Table("dbo","OracleAttachment");
-//			table.addField(new Field("AttachmentID",it.mapFieldType("uniqueidentifier")));
-//			table.addField(new Field("AttachmentPath",it.mapFieldType("varchar")));
-//			table.addField(new Field("AttachmentName",it.mapFieldType("varchar")));
-//			table.addField(new Field("MIMEType",it.mapFieldType("varchar")));
-//			table.addField(new Field("ImageData",it.mapFieldType("varbinary")));
-//			table.addField(new Field("DateUploaded",it.mapFieldType("datetime")));
-//			List<Table> tables = new ArrayList<Table>();
-//			tables.add(table);
-//			copier.setTablesToCopy(tables);
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	
-	
+	private static List<String> getNameFilter() {
+		List<String> filters = new ArrayList<String>();
+		
+		filters.add("AttachmentData");
+		filters.add("AuditSubmission");
+		filters.add("AuditUserDetails");
+		filters.add("ConditionComment");
+		filters.add("ConditionGroup");
+		filters.add("Division");
+		filters.add("MessageQueue");
+		filters.add("OracleAttachment");
+		filters.add("OracleUser");
+		filters.add("OracleUserDetails");
+		filters.add("Region");
+		filters.add("SubmissionIDAllocation");
+		filters.add("SubmissionStatusActionRoleBackup3");
+		filters.add("SubmissionUserRole");
+		filters.add("UserRole");
+		
+		return filters;
+	}
 	
 
 }
