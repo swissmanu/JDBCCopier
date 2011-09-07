@@ -13,8 +13,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import me.alabor.jdbccopier.copier.AbstractCopier;
 import me.alabor.jdbccopier.copier.Copier;
 import me.alabor.jdbccopier.copier.CopierTask;
+import me.alabor.jdbccopier.copier.DefaultCopier;
 import me.alabor.jdbccopier.database.Database;
 import me.alabor.jdbccopier.database.MSSQLDatabase;
 import me.alabor.jdbccopier.database.meta.Table;
@@ -27,13 +29,14 @@ public class JDBCCopier {
 	private final static String TARGET = "jdbc:sqlserver://localhost;database=RepRiskLocal;integratedSecurity=true;";
 		
 	public static void main(String[] args) throws InterruptedException {
+		
 		try {
 			Database it = new MSSQLDatabase(SOURCE);
 			it.connect();
 			List<Table> tables = it.getTables();
 			
 			List<Table> copierPackage = new ArrayList<Table>();
-			final List<Copier> copiers = new ArrayList<Copier>();
+			final List<DefaultCopier> copiers = new ArrayList<DefaultCopier>();
 			for(int i = 0, l = tables.size(); i < l; i++) {
 				Table table = tables.get(i);
 				copierPackage.add(table);
@@ -41,8 +44,7 @@ public class JDBCCopier {
 				if(copierPackage.size() >= 8) {
 					Database source = new MSSQLDatabase(SOURCE);
 					Database target = new MSSQLDatabase(TARGET);
-					Copier copier = new Copier(source, target);
-					copier.setTablesToCopy(copierPackage);
+					DefaultCopier copier = new DefaultCopier(source, target, copierPackage);
 					copiers.add(copier);
 					copierPackage = new ArrayList<Table>();
 				}
@@ -51,16 +53,9 @@ public class JDBCCopier {
 			if(copierPackage.size() > 0 && copierPackage.size() <= 8) {
 				Database source = new MSSQLDatabase(SOURCE);
 				Database target = new MSSQLDatabase(TARGET);
-				Copier copier = new Copier(source, target);
-				copier.setTablesToCopy(copierPackage);
+				DefaultCopier copier = new DefaultCopier(source, target, copierPackage);
 				copiers.add(copier);
 				copierPackage = new ArrayList<Table>();
-			}
-			
-			for (Copier copier : copiers) {
-				for (Table table : copier.getTablesToCopy()) {
-					System.out.println(table);
-				}
 			}
 			
 			
@@ -84,7 +79,7 @@ public class JDBCCopier {
 			});
 			
 			
-			for (Copier copier : copiers) {
+			for (AbstractCopier copier : copiers) {
 				StatusPanel status = new StatusPanel();
 				copier.addCopierListener(status);
 				tbpTabs.addTab("Copier",status);
@@ -115,5 +110,9 @@ public class JDBCCopier {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
+	
 
 }

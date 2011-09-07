@@ -1,4 +1,4 @@
-package me.alabor.jdbccopier.copier;
+package me.alabor.jdbccopier.copier.listener;
 
 import java.util.List;
 

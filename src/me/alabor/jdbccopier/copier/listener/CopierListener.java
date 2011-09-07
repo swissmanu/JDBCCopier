@@ -1,13 +1,14 @@
-package me.alabor.jdbccopier.copier;
+package me.alabor.jdbccopier.copier.listener;
 
 import java.util.List;
 
+import me.alabor.jdbccopier.copier.DefaultCopier;
 import me.alabor.jdbccopier.database.meta.Table;
 
 public interface CopierListener {
 
 	/**
-	 * Notifies that the {@link Copier} begins now to copy the {@link Table} table
+	 * Notifies that the {@link DefaultCopier} begins now to copy the {@link Table} table
 	 * 
 	 * @param table
 	 * @param totalRows
@@ -33,7 +34,7 @@ public interface CopierListener {
 	public void error(Table table, Exception exception);
 	
 	/**
-	 * Notifies that the {@link Copier} has finished the copy of {@link Table}
+	 * Notifies that the {@link DefaultCopier} has finished the copy of {@link Table}
 	 * table.
 	 * 
 	 * @param table
@@ -48,7 +49,7 @@ public interface CopierListener {
 	public void startCopy(List<Table> tables);
 	
 	/**
-	 * Notifies that the {@link Copier} has completed its actions.
+	 * Notifies that the {@link DefaultCopier} has completed its actions.
 	 * 
 	 * @param totalSuccess Statistics
 	 * @param totalError Statistics

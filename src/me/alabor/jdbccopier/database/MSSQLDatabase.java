@@ -95,7 +95,7 @@ public class MSSQLDatabase implements Database {
 	@Override
 	public boolean beforeCopy(Mode mode) {
 		boolean result = true;
-		if(mode == Mode.Target) result = enableConstraints(false);
+		//if(mode == Mode.Target) result = enableConstraints(false);
 		
 		return result; 
 	}
@@ -103,7 +103,7 @@ public class MSSQLDatabase implements Database {
 	@Override
 	public boolean afterCopy(Mode mode) {
 		boolean result = true;
-		if(mode == Mode.Target) result = enableConstraints(true);
+		//if(mode == Mode.Target) result = enableConstraints(true);
 		
 		return result; 
 	}

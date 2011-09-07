@@ -9,7 +9,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-import me.alabor.jdbccopier.copier.CopierListener;
+import me.alabor.jdbccopier.copier.listener.CopierListener;
 import me.alabor.jdbccopier.database.meta.Table;
 
 public class StatusPanel extends JPanel implements CopierListener{
