@@ -4,7 +4,17 @@ import me.alabor.jdbccopier.database.meta.Table;
 
 public class ConsoleCopierListener implements CopierListener {
 
+	private boolean outputPercentageOutput;
 	private int percentageDone = 0;
+	
+	public ConsoleCopierListener() {
+		this(true);
+	}
+	
+	public ConsoleCopierListener(boolean outputPercentageOutput) {
+		this.outputPercentageOutput = outputPercentageOutput;
+	}
+	
 	
 	@Override
 	public void startCopyTable(Table table, long totalRows) {
@@ -14,11 +24,13 @@ public class ConsoleCopierListener implements CopierListener {
 
 	@Override
 	public void copyTableStatus(Table table, long currentPos, long totalRows) {
-		int percentage = (int)(currentPos * 100 / totalRows);
+		if(outputPercentageOutput) {
+			int percentage = (int)(currentPos * 100 / totalRows);
 
-		if(percentageDone+10 < percentage) {
-			System.out.println("Progress: " + percentageDone + "%");
-			percentageDone = percentage;
+			if(percentageDone+10 < percentage) {
+				System.out.println("Progress: " + percentageDone + "%");
+				percentageDone = percentage;
+			}			
 		}
 	}
 	
@@ -29,7 +41,7 @@ public class ConsoleCopierListener implements CopierListener {
 
 	@Override
 	public void endCopyTable(Table table) {
-		System.out.println("Done 100%");
+		if(outputPercentageOutput) System.out.println("Done 100%");
 		System.out.println("-------------------------------------------");
 	}
 

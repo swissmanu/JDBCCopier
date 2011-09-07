@@ -2,6 +2,7 @@ package me.alabor.jdbccopier.ui;
 
 import java.awt.BorderLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -13,7 +14,7 @@ import me.alabor.jdbccopier.database.meta.Table;
 public class WorkerStatusPanel extends JPanel implements CopierListener{
 	
 	private final JProgressBar barProgress = new JProgressBar();
-	private final JLabel lblStatus = new JLabel();
+	private final JLabel lblStatus = new JLabel("Worker ready");
 
 	public WorkerStatusPanel() {
 		buildGui();
@@ -21,6 +22,9 @@ public class WorkerStatusPanel extends JPanel implements CopierListener{
 	
 	private void buildGui() {
 		setLayout(new BorderLayout());
+		setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, getForeground()),
+				BorderFactory.createEmptyBorder(4,4,2,4)));
 		
 		add(barProgress, BorderLayout.NORTH);
 		add(lblStatus, BorderLayout.SOUTH);
