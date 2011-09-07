@@ -4,8 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -27,30 +31,29 @@ import me.alabor.jdbccopier.ui.WorkerStatusPanel;
 
 
 public class JDBCCopier {
-
-	private final static int MAX_WORKERS = 5;
-	private final static String SOURCE = "jdbc:sqlserver://CHSA1639.eur.beluni.net\\TZUPBRRI01;database=RepRisk;integratedSecurity=true;";
-	private final static String TARGET = "jdbc:sqlserver://localhost;database=RepRiskLocal;integratedSecurity=true;";
-	//private final static String SOURCE = "jdbc:sqlserver://localhost;database=RepRiskLocal;integratedSecurity=true;";
-	//private final static String TARGET = "jdbc:sqlserver://localhost;database=Test;integratedSecurity=true;";
-		
+	
 	public static void main(String[] args) throws InterruptedException {
+	
+		Properties properties = loadProperties();
+		String sourceConnectionString = properties.getProperty("source.connectionString", "");
+		String targetConnectionString = properties.getProperty("target.connectionString", "");
+		int maxWorkers = new Integer(properties.getProperty("maxworkers")).intValue();
 		
 		try {
-			Database it = new MSSQLDatabase(SOURCE);
+			Database it = new MSSQLDatabase(sourceConnectionString);
 			it.connect();
 			
 			List<String> nameFilter = getNameFilter();
 			Queue<Table> pool = new ConcurrentLinkedQueue<Table>(it.getTables(nameFilter));
-			final List<Thread> workers = new ArrayList<Thread>(MAX_WORKERS+1);
-			List<WorkerStatusPanel> statusPanels = new ArrayList<WorkerStatusPanel>(MAX_WORKERS+1);
+			final List<Thread> workers = new ArrayList<Thread>(maxWorkers+1);
+			List<WorkerStatusPanel> statusPanels = new ArrayList<WorkerStatusPanel>(maxWorkers+1);
 			ConsoleCopierListener console = new ConsoleCopierListener(false);
 			
 			/* Create Workers & Statuspanels: */
-			for(int i = 0; i < MAX_WORKERS; i++) {
-				Database source = new MSSQLDatabase(SOURCE);
-				Database target = new MSSQLDatabase(TARGET);
-				Copier pooledCopier = new PooledCopier(source, target, pool);
+			for(int i = 0; i < maxWorkers; i++) {
+				Database sourceDatabase = new MSSQLDatabase(sourceConnectionString);
+				Database targetDatabase = new MSSQLDatabase(targetConnectionString);
+				Copier pooledCopier = new PooledCopier(sourceDatabase, targetDatabase, pool);
 				WorkerStatusPanel statusPanel = new WorkerStatusPanel();
 				
 				pooledCopier.addCopierListener(statusPanel);
@@ -114,6 +117,24 @@ public class JDBCCopier {
 		filters.add("UserRole");
 		
 		return filters;
+	}
+	
+	private static Properties loadProperties() {
+		return loadProperties("config.properties");
+	}
+	
+	private static Properties loadProperties(String configFile) {
+		Properties props = new Properties();
+		
+		try {
+			props.load(new FileInputStream(configFile));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return props;
 	}
 	
 
