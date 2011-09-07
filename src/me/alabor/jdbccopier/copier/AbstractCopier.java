@@ -88,9 +88,9 @@ public abstract class AbstractCopier implements Copier {
 		}
 	}
 	
-	protected void fireStartCopy(List<Table> tables) {
+	protected void fireStartCopy() {
 		for (CopierListener listener : listeners) {
-			listener.startCopy(tables);
+			listener.startCopy();
 		}
 	}	
 	

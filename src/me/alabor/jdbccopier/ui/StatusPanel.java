@@ -1,7 +1,6 @@
 package me.alabor.jdbccopier.ui;
 
 import java.awt.BorderLayout;
-import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -74,14 +73,8 @@ public class StatusPanel extends JPanel implements CopierListener{
 	}
 	
 	@Override
-	public void startCopy(List<Table> tables) {
-		StringBuffer text = new StringBuffer("Copy following tables:");
-		for (Table table : tables) {
-			text.append("\n- ");
-			text.append(table);
-		}
-		text.append("\n");
-		addLog(text.toString());
+	public void startCopy() {
+		
 	}
 	
 	@Override

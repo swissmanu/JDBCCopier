@@ -9,6 +9,12 @@ import me.alabor.jdbccopier.database.Database;
 import me.alabor.jdbccopier.database.Mode;
 import me.alabor.jdbccopier.database.meta.Table;
 
+/**
+ * Copies the content of a list of {@link Table}'s from one database to another
+ * one.
+ * 
+ * @author Manuel Alabor
+ */
 public class DefaultCopier extends AbstractCopier implements Copier {
 	
 	private Database source = null;
@@ -33,7 +39,7 @@ public class DefaultCopier extends AbstractCopier implements Copier {
 	@Override
 	public void copy() {
 		if(checkConnections()) {
-			//fireStartCopy();
+			fireStartCopy();
 			
 			source.beforeCopy(Mode.Source);
 			target.beforeCopy(Mode.Target);

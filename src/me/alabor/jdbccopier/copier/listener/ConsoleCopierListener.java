@@ -1,7 +1,5 @@
 package me.alabor.jdbccopier.copier.listener;
 
-import java.util.List;
-
 import me.alabor.jdbccopier.database.meta.Table;
 
 public class ConsoleCopierListener implements CopierListener {
@@ -36,8 +34,8 @@ public class ConsoleCopierListener implements CopierListener {
 	}
 
 	@Override
-	public void startCopy(List<Table> tables) {
-		System.out.println("Start copy " + tables.size() + " tables");
+	public void startCopy() {
+		System.out.println("Start copy");
 		System.out.println("===========================================");
 	}
 	

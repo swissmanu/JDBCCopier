@@ -10,7 +10,7 @@ public class CopierTask implements Runnable {
 	
 	@Override
 	public void run() {
-		this.copier.copy();
+		copier.copy();
 	}
-	
+
 }
