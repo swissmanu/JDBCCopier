@@ -63,14 +63,11 @@ public class JDBCCopier {
 				}
 			}
 			
-			System.exit(0);
-			
-			
-			
 			
 			JFrame frame = new JFrame("JDBCCopier");
 			frame.setMinimumSize(new Dimension(600,500));
 			frame.setSize(frame.getMinimumSize());
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			
 			JTabbedPane tbpTabs = new JTabbedPane();
 			final JButton btnStart = new JButton("Start");
@@ -79,7 +76,7 @@ public class JDBCCopier {
 				public void actionPerformed(ActionEvent e) {
 					btnStart.setEnabled(false);
 					
-					for (Copier copier : copiers) {
+					for(Copier copier : copiers) {
 						Thread t = new Thread(new CopierTask(copier));
 						t.start();
 					}
