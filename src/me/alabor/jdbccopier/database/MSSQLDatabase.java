@@ -99,25 +99,12 @@ public class MSSQLDatabase implements Database {
 	}
 	
 	@Override
-	public boolean beforeCopy(Mode mode) {
-		boolean result = true;
-		//if(mode == Mode.Target) result = enableConstraints(false);
-		
-		return result; 
-	}
-	
-	@Override
-	public boolean afterCopy(Mode mode) {
-		boolean result = true;
-		//if(mode == Mode.Target) result = enableConstraints(true);
-		
-		return result; 
-	}
-	
-	@Override
 	public boolean beforeTableCopy(Table table, Mode mode) {
 		boolean result = true;
-		if(mode == Mode.Target) result = setIdentityInsert(table, true);
+		if(mode == Mode.Target) {
+			result = enableConstraints(table, false);
+			result = setIdentityInsert(table, true);
+		}
 		
 		return result; 
 	}
@@ -125,7 +112,10 @@ public class MSSQLDatabase implements Database {
 	@Override
 	public boolean afterTableCopy(Table table, Mode mode) {
 		boolean result = true;
-		if(mode == Mode.Target) result = setIdentityInsert(table, false);
+		if(mode == Mode.Target) {
+			result = enableConstraints(table, true);
+			result = setIdentityInsert(table, false);
+		}
 		
 		return result;
 	}
@@ -134,6 +124,12 @@ public class MSSQLDatabase implements Database {
 	public String buildTableName(Table table) {
 		return "["+table.getSchema()+"].["+table.getName()+"]";
 	}
+	
+	@Override
+	public boolean beforeCopy(Mode mode) { return true; }
+	
+	@Override
+	public boolean afterCopy(Mode mode) { return true; }
 	
 	@Override
 	public PreparedStatement buildPreparedInsertStatement(Table table) throws Exception {
@@ -266,10 +262,10 @@ public class MSSQLDatabase implements Database {
 	 * @param enabled
 	 * @return
 	 */
-	private boolean enableConstraints(boolean enabled) {
+	private boolean enableConstraints(Table table, boolean enabled) {
 		boolean result = true;
-		String query = "EXEC sp_msforeachtable \"ALTER TABLE ? NOCHECK CONSTRAINT all\"";
-		if(enabled) query = "EXEC sp_msforeachtable @command1=\"print '?'\", @command2=\"ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all\"";
+		String query = "ALTER TABLE " + buildTableName(table) + " NOCHECK CONSTRAINT all";
+		if(enabled) query = "ALTER TABLE " + buildTableName(table) + " WITH CHECK CHECK CONSTRAINT all";
 		
 		try {
 			Statement statement = getConnection().createStatement();
