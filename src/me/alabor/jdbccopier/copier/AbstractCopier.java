@@ -137,23 +137,15 @@ public abstract class AbstractCopier implements Copier {
 	
 	
 	// Event-Handling ----------------------------------------------------------
-	/**
-	 * Adds, if not already added, a new {@link CopierListener} to this
-	 * {@link Copier}.
-	 * 
-	 * @param copierListener
-	 */
+	@Override
 	public void addCopierListener(CopierListener copierListener) {
 		if(!listeners.contains(copierListener)) {
 			listeners.add(copierListener);
 		}
 	}
 
-	/**
-	 * Removes a {@link CopierListener} from this {@link Copier}.
-	 * 
-	 * @param copierListener
-	 */
+
+	@Override
 	public void removeCopierListener(CopierListener copierListener) {
 		listeners.remove(copierListener);
 	}

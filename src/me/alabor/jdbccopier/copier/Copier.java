@@ -3,6 +3,7 @@ package me.alabor.jdbccopier.copier;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import me.alabor.jdbccopier.copier.listener.CopierListener;
 import me.alabor.jdbccopier.database.meta.FieldType;
 import me.alabor.jdbccopier.database.meta.Table;
 
@@ -31,5 +32,20 @@ public interface Copier {
 	 * @return Table
 	 */
 	public Table getNextTable();
+
+	/**
+	 * Removes a {@link CopierListener} from this {@link Copier}.
+	 * 
+	 * @param copierListener
+	 */
+	public abstract void removeCopierListener(CopierListener copierListener);
+
+	/**
+	 * Adds, if not already added, a new {@link CopierListener} to this
+	 * {@link Copier}.
+	 * 
+	 * @param copierListener
+	 */
+	public abstract void addCopierListener(CopierListener copierListener);
 	
 }
