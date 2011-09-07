@@ -59,6 +59,7 @@ public class WorkerStatusPanel extends JPanel implements CopierListener{
 	@Override
 	public void copyTableStatus(Table table, final long currentPos, long totalRows) {
 		setProgess((int)currentPos, (int)totalRows);
+		setStatusText("Copy table " + table + " (" + currentPos + "/" + totalRows + " rows)");
 	}
 	
 	@Override
