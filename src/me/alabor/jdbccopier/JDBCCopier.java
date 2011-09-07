@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -33,12 +34,29 @@ import me.alabor.jdbccopier.ui.WorkerStatusPanel;
 public class JDBCCopier {
 	
 	public static void main(String[] args) throws InterruptedException {
-	
+		/* Config: */
 		Properties properties = loadProperties();
+		String sourceType = properties.getProperty("source.type", "");
 		String sourceConnectionString = properties.getProperty("source.connectionString", "");
+		String targetType = properties.getProperty("source.type", "");
 		String targetConnectionString = properties.getProperty("target.connectionString", "");
-		int maxWorkers = new Integer(properties.getProperty("maxworkers")).intValue();
+		int maxWorkers = new Integer(properties.getProperty("maxworkers","-1")).intValue();
 		
+		// Check config:
+		if(sourceType.length() == 0 || sourceConnectionString.length() == 0
+			|| targetType.length() == 0 || targetConnectionString.length() == 0
+			|| maxWorkers == -1) {
+			
+			JOptionPane.showMessageDialog(
+					new JFrame(),
+					"Error with config.properties!",
+					"config.properties",
+					JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
+		}
+		
+		
+		/* Run: */
 		try {
 			Database it = new MSSQLDatabase(sourceConnectionString);
 			it.connect();
