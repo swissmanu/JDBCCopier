@@ -2,6 +2,7 @@ package me.alabor.jdbccopier.copier;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,33 +65,72 @@ public abstract class AbstractCopier implements Copier {
 		
 		for (int i = 0, l = fields.size(); i < l; i++) {
 			Field field = fields.get(i);
-			FieldType type = field.getType();
 			int parameterIndex = i+1;
 			
-			
-			if(type == FieldType.BigInt) {
-				statement.setLong(parameterIndex, contents.getLong(field.getName()));
-			} else if(type == FieldType.Bit) {
-				statement.setBoolean(parameterIndex, contents.getBoolean(field.getName()));
-			} else if(type == FieldType.Character) {
-				statement.setString(parameterIndex, contents.getString(field.getName()));
-			} else if(field.getType() == FieldType.Date
-					|| type == FieldType.Time
-					|| type == FieldType.Timestamp) {
-				statement.setDate(parameterIndex, contents.getDate(field.getName()));
-			} else if(type == FieldType.BitVarying) {
-				statement.setBytes(parameterIndex, contents.getBytes(field.getName()));
-			} else if(type == FieldType.Integer) {
-				statement.setInt(parameterIndex, contents.getInt(field.getName()));
-			} else if(type == FieldType.Numeric) {
-				statement.setBigDecimal(parameterIndex, contents.getBigDecimal(field.getName()));
-			} else if(type == FieldType.CharacterVarying) {
-				statement.setNString(parameterIndex, contents.getNString(field.getName()));
-			}
+			Object nullTester = contents.getObject(field.getName());
+			if(nullTester != null) statement = setValue(statement, contents, field, parameterIndex);
+			else statement = setNullValue(statement, field, parameterIndex);
 		}
 		
 		return statement;
 	}
+
+	private PreparedStatement setValue(PreparedStatement statement, ResultSet contents, Field field, int parameterIndex) throws SQLException {
+		String name = field.getName();
+		FieldType type = field.getType();
+		
+		if(type == FieldType.BigInt) {
+			statement.setLong(parameterIndex, contents.getLong(name));
+		} else if(type == FieldType.Bit) {
+			statement.setBoolean(parameterIndex, contents.getBoolean(name));
+		} else if(type == FieldType.Character) {
+			statement.setString(parameterIndex, contents.getString(name));
+		} else if(field.getType() == FieldType.Date
+				|| type == FieldType.Time
+				|| type == FieldType.Timestamp) {
+			statement.setDate(parameterIndex, contents.getDate(name));
+		} else if(type == FieldType.BitVarying) {
+			statement.setBytes(parameterIndex, contents.getBytes(name));
+		} else if(type == FieldType.Integer) {
+			statement.setInt(parameterIndex, contents.getInt(name));
+		} else if(type == FieldType.Numeric) {
+			statement.setBigDecimal(parameterIndex, contents.getBigDecimal(name));
+		} else if(type == FieldType.CharacterVarying) {
+			statement.setNString(parameterIndex, contents.getNString(name));
+		}
+		
+		return statement;
+	}
+	
+	private PreparedStatement setNullValue(PreparedStatement statement, Field field, int parameterIndex) throws SQLException {
+		String name = field.getName();
+		FieldType type = field.getType();
+		
+		if(type == FieldType.BigInt) {
+			statement.setNull(parameterIndex, java.sql.Types.BIGINT);
+		} else if(type == FieldType.Bit) {
+			statement.setNull(parameterIndex, java.sql.Types.BIT);
+		} else if(type == FieldType.Character) {
+			statement.setNull(parameterIndex, java.sql.Types.CHAR);
+		} else if(field.getType() == FieldType.Date) {
+			statement.setNull(parameterIndex, java.sql.Types.DATE);
+		} else if(field.getType() == FieldType.Time) {
+			statement.setNull(parameterIndex, java.sql.Types.TIME);
+		} else if(type == FieldType.Timestamp) {
+			statement.setNull(parameterIndex, java.sql.Types.TIMESTAMP);
+		} else if(type == FieldType.BitVarying) {
+			statement.setNull(parameterIndex, java.sql.Types.VARBINARY);
+		} else if(type == FieldType.Integer) {
+			statement.setNull(parameterIndex, java.sql.Types.INTEGER);
+		} else if(type == FieldType.Numeric) {
+			statement.setNull(parameterIndex, java.sql.Types.NUMERIC);
+		} else if(type == FieldType.CharacterVarying) {
+			statement.setNull(parameterIndex, java.sql.Types.VARCHAR);
+		}
+		
+		return statement;
+	}
+	
 	
 	/**
 	 * Checks the database connection in source and target.
