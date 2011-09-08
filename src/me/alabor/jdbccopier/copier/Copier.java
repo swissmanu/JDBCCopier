@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import me.alabor.jdbccopier.copier.listener.CopierListener;
-import me.alabor.jdbccopier.database.meta.FieldType;
 import me.alabor.jdbccopier.database.meta.Table;
 
 public interface Copier {

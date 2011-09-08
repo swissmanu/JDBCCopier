@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import me.alabor.jdbccopier.database.meta.FieldType;
 import me.alabor.jdbccopier.database.meta.Table;
 
 public interface Database {
@@ -104,13 +103,5 @@ public interface Database {
 	 * @throws Exception
 	 */
 	public PreparedStatement buildPreparedInsertStatement(Table table) throws Exception;
-	
-	/**
-	 * Maps a database specific field type into its {@link FieldType} pendent.
-	 * 
-	 * @param stringFieldType
-	 * @return
-	 */
-	public FieldType mapFieldType(String stringFieldType);
 	
 }

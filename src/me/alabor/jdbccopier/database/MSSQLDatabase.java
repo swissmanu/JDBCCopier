@@ -1,5 +1,6 @@
 package me.alabor.jdbccopier.database;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.alabor.jdbccopier.database.meta.Field;
-import me.alabor.jdbccopier.database.meta.FieldType;
 import me.alabor.jdbccopier.database.meta.Table;
 
 
@@ -162,39 +162,6 @@ public class MSSQLDatabase implements Database {
 		return createPreparedStatement(query.toString());
 	}
 	
-	@Override
-	public FieldType mapFieldType(String stringFieldType) {
-		FieldType fieldType = null;
-		
-		if(stringFieldType.equals("bigint")) {
-			fieldType = FieldType.BigInt;
-		} else if(stringFieldType.equals("bit")) {
-			fieldType = FieldType.Bit;
-		} else if(stringFieldType.equals("char")) {
-			fieldType = FieldType.Character;
-		} else if(stringFieldType.equals("datetime")) {
-			fieldType = FieldType.Date;
-		} else if(stringFieldType.equals("image")) {
-			fieldType = FieldType.BitVarying;  // ??
-		} else if(stringFieldType.equals("int")) {
-			fieldType = FieldType.Integer;
-		} else if(stringFieldType.equals("numeric")) {
-			fieldType = FieldType.Numeric;
-		} else if(stringFieldType.equals("nvarchar")) {
-			fieldType = FieldType.CharacterVarying;
-		} else if(stringFieldType.equals("text")) {
-			fieldType = FieldType.Character;
-		} else if(stringFieldType.equals("uniqueidentifier")) {
-			fieldType = FieldType.Character;
-		} else if(stringFieldType.equals("varbinary")) {
-			fieldType = FieldType.BitVarying;
-		} else if(stringFieldType.equals("varchar")) {
-			fieldType = FieldType.Character;
-		}
-		
-		return fieldType;
-	}
-	
 	
 	// Helpers -----------------------------------------------------------------
 	public Connection getConnection() {
@@ -239,16 +206,13 @@ public class MSSQLDatabase implements Database {
 		List<Field> fields = new ArrayList<Field>();
 		
 		try {
-			String query = "SELECT COLUMN_NAME, DATA_TYPE FROM information_schema.columns WHERE TABLE_SCHEMA=? AND TABLE_NAME=?";
-			PreparedStatement statement = getConnection().prepareStatement(query);
-			statement.setString(1, table.getSchema());
-			statement.setString(2, table.getName());
-			ResultSet result = statement.executeQuery();
+			DatabaseMetaData meta = getConnection().getMetaData();
+			ResultSet columns = meta.getColumns(null, null, table.getName(), null);
 			
-			while(result.next()) {
-				Field field = new Field(result.getString("COLUMN_NAME"), mapFieldType(result.getString("DATA_TYPE")));
-				fields.add(field);
-			}	
+			while(columns.next()) {
+				Field field = new Field(columns.getString("COLUMN_NAME"), columns.getInt("DATA_TYPE"));
+				fields.add(field);				
+			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}

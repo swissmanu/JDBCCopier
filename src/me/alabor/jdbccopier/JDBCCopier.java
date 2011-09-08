@@ -127,8 +127,10 @@ public class JDBCCopier {
 		String[] raw = nameFilters.split(",");
 		List<String> filters = new ArrayList<String>(raw.length);
 		
-		for (String filter : raw) {
-			filters.add(filter);
+		if(raw.length > 0 && raw[0].length() > 0) {
+			for (String filter : raw) {
+				filters.add(filter);
+			}			
 		}
 		
 		return filters;
