@@ -102,7 +102,7 @@ public class MSSQLDatabase implements Database {
 	public boolean beforeTableCopy(Table table, Mode mode) {
 		boolean result = true;
 		if(mode == Mode.Target) {
-			result = enableConstraints(table, false);
+			//result = enableConstraints(table, false);
 			result = setIdentityInsert(table, true);
 		}
 		
@@ -113,7 +113,7 @@ public class MSSQLDatabase implements Database {
 	public boolean afterTableCopy(Table table, Mode mode) {
 		boolean result = true;
 		if(mode == Mode.Target) {
-			result = enableConstraints(table, true);
+			//result = enableConstraints(table, true);
 			result = setIdentityInsert(table, false);
 		}
 		
