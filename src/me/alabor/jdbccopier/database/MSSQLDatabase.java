@@ -49,7 +49,7 @@ public class MSSQLDatabase implements Database {
 	public List<Table> getTables(List<String> nameFilter) {
 		String filter = prepareTableNameFilter(nameFilter);
 		List<Table> tables = new ArrayList<Table>();
-		String query = "SELECT TABLE_NAME, TABLE_SCHEMA FROM information_schema.tables WHERE TABLE_TYPE=?" + filter;
+		String query = "SELECT TABLE_CATALOG, TABLE_NAME, TABLE_SCHEMA FROM information_schema.tables WHERE TABLE_TYPE=?" + filter;
 		String tableType = "BASE TABLE";
 		
 		try {
@@ -58,10 +58,11 @@ public class MSSQLDatabase implements Database {
 			ResultSet result = statement.executeQuery();
 			
 			while(result.next()) {
+				String catalog = result.getString("TABLE_CATALOG");
 				String schema = result.getString("TABLE_SCHEMA");
 				String name = result.getString("TABLE_NAME");
 				
-				Table table = new Table(schema, name);
+				Table table = new Table(catalog, schema, name);
 				table.setFields(getFieldsForTable(table)); // important :)
 				tables.add(table);
 			}

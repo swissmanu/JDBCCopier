@@ -6,14 +6,20 @@ import java.util.List;
 
 public class Table {
 
+	private String calaog;
 	private String schema;
 	private String name;
 	private List<Field> fields = new ArrayList<Field>();
 	
-	public Table(String schema, String table) {
+	public Table(String catalog, String schema, String table) {
 		super();
+		this.calaog = catalog;
 		this.schema = schema;
 		this.name = table;
+	}
+	
+	public String getCalaog() {
+		return calaog;
 	}
 	
 	public String getSchema() {
@@ -38,7 +44,7 @@ public class Table {
 	
 	@Override
 	public String toString() {
-		return getSchema() + "." + getName();
+		return getCalaog() + "." + getSchema() + "." + getName();
 	}
 	
 }
