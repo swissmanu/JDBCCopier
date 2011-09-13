@@ -40,9 +40,11 @@ public class JDBCCopier {
 		String sourceConnectionString = properties.getProperty("source.connectionString", "");
 		String targetType = properties.getProperty("source.type", "");
 		String targetConnectionString = properties.getProperty("target.connectionString", "");
-		String nameFilters = properties.getProperty("namefilters", "");
+		String includes = properties.getProperty("include", "");
+		String excludes = properties.getProperty("exclude", "");
 		int maxWorkers = new Integer(properties.getProperty("maxworkers","-1")).intValue();
-		List<String> nameFilter = getNameFilter(nameFilters);
+		List<String> includeTables = getNameFilter(includes);
+		List<String> excludeTables = getNameFilter(excludes);
 		
 		// Check config:
 		if(sourceType.length() == 0 || sourceConnectionString.length() == 0
@@ -51,7 +53,7 @@ public class JDBCCopier {
 			
 			JOptionPane.showMessageDialog(
 					new JFrame(),
-					"Error with config.properties!",
+					"Error with config.properties! Ensure that at least source.connectionString, target.connectionString\n and maxWorkers is defined.",
 					"config.properties",
 					JOptionPane.ERROR_MESSAGE);
 			System.exit(0);
@@ -63,7 +65,7 @@ public class JDBCCopier {
 			Database it = new MSSQLDatabase(sourceConnectionString);
 			it.connect();
 			
-			Queue<Table> pool = new ConcurrentLinkedQueue<Table>(it.getTables(nameFilter));
+			Queue<Table> pool = new ConcurrentLinkedQueue<Table>(it.getTables(includeTables, excludeTables));
 			final List<Thread> workers = new ArrayList<Thread>(maxWorkers+1);
 			List<WorkerStatusPanel> statusPanels = new ArrayList<WorkerStatusPanel>(maxWorkers+1);
 			ConsoleCopierListener console = new ConsoleCopierListener(false);

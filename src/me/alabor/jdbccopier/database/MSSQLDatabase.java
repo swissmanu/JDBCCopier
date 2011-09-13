@@ -42,12 +42,12 @@ public class MSSQLDatabase implements Database {
 	
 	@Override
 	public List<Table> getTables() {
-		return getTables(new ArrayList<String>(0));
+		return getTables(new ArrayList<String>(0), new ArrayList<String>(0));
 	}
 	
 	@Override
-	public List<Table> getTables(List<String> nameFilter) {
-		String filter = prepareTableNameFilter(nameFilter);
+	public List<Table> getTables(List<String> includes, List<String> excludes) {
+		String filter = prepareIncludeAndExcludeClause(includes, excludes);
 		List<Table> tables = new ArrayList<Table>();
 		String query = "SELECT TABLE_CATALOG, TABLE_NAME, TABLE_SCHEMA FROM information_schema.tables WHERE TABLE_TYPE=?" + filter;
 		String tableType = "BASE TABLE";
@@ -179,15 +179,31 @@ public class MSSQLDatabase implements Database {
 	 * @param nameFilters
 	 * @return
 	 */
-	private String prepareTableNameFilter(List<String> nameFilters) {
+	private String prepareIncludeAndExcludeClause(List<String> includes, List<String> excludes) {
 		String filter = "";
 		
-		if(nameFilters.size() > 0) {
-			StringBuffer buffer = new StringBuffer(" AND TABLE_NAME IN(");
-			for(int i = 0, l = nameFilters.size(); i < l; i++) {
+		filter = prepareFilterClause(" AND TABLE_NAME IN(", includes);
+		filter = filter + prepareFilterClause(" AND TABLE_NAME NOT IN(", excludes);
+		
+		return filter;
+	}
+
+	/**
+	 * Generates a filter clause for {@link #prepareIncludeAndExcludeClause(List, List)}
+	 * 
+	 * @param clause
+	 * @param includes
+	 * @return
+	 */
+	private String prepareFilterClause(String clause, List<String> includes) {
+		String filter = "";
+		
+		if(includes.size() > 0) {
+			StringBuffer buffer = new StringBuffer(clause);
+			for(int i = 0, l = includes.size(); i < l; i++) {
 				if(i > 0) buffer.append(",");
 				buffer.append("'");
-				buffer.append(nameFilters.get(i));
+				buffer.append(includes.get(i));
 				buffer.append("'");
 			}
 			buffer.append(")");
@@ -196,6 +212,7 @@ public class MSSQLDatabase implements Database {
 		
 		return filter;
 	}
+	
 	
 	/**
 	 * Delivers a list with {@link Field}'s for the given {@link Table}.

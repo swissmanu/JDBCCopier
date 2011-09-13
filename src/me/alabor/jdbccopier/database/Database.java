@@ -26,13 +26,15 @@ public interface Database {
 	public List<Table> getTables();
 	
 	/**
-	 * Same as {@link #getTables()}, but with the possibility to pass a {@link List}
-	 * with {@link String}'s which are used to filter the tables.
+	 * Same as {@link #getTables()}, but with the possibility to pass {@link List}'s
+	 * with {@link String}'s which describe what tables to include/exclude from
+	 * the copy-process.
 	 * 
-	 * @param nameFilter
+	 * @param includes
+	 * @param excludes
 	 * @return
 	 */
-	public List<Table> getTables(List<String> nameFilter);
+	public List<Table> getTables(List<String> includes, List<String> excludes);
 	
 	/**
 	 * Counts the total rows on the {@link Table} table.
