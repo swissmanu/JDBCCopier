@@ -32,7 +32,6 @@ public class DatabaseFactory {
 		}
 		
 		return database;
-		
 	}
 	
 }
