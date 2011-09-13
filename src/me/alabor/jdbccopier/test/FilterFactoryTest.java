@@ -3,12 +3,12 @@ package me.alabor.jdbccopier.test;
 import java.util.List;
 
 import junit.framework.Assert;
-
+import junit.framework.TestCase;
 import me.alabor.jdbccopier.copier.factory.FilterFactory;
 
 import org.junit.Test;
 
-public class FilterFactoryTest {
+public class FilterFactoryTest extends TestCase {
 
 	@Test
 	public void testCreateFilterList() {

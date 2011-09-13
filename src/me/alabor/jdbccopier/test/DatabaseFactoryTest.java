@@ -1,12 +1,13 @@
 package me.alabor.jdbccopier.test;
 
+import junit.framework.TestCase;
 import me.alabor.jdbccopier.database.factory.DatabaseFactory;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DatabaseFactoryTest {
+public class DatabaseFactoryTest extends TestCase {
 
 	private DatabaseFactory factory;
 	
@@ -19,7 +20,11 @@ public class DatabaseFactoryTest {
 	
 	@Test
 	public void testCreateMSSQLDatabase() {
-		Assert.assertNotNull(this.factory.createDatabase(DATABASETYPE_MSSQL, ""));
+		Assert.assertNotNull(getFactory().createDatabase(DATABASETYPE_MSSQL, ""));
+	}
+	
+	private DatabaseFactory getFactory() {
+		return factory;
 	}
 
 }

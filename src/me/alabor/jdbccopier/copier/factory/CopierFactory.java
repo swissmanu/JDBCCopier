@@ -14,7 +14,6 @@ public class CopierFactory {
 	
 	private DatabaseFactory databaseFactory;
 	
-	
 	/**
 	 * Creates a new {@link CopierFactory} using the given {@link DatabaseFactory}.
 	 * 
