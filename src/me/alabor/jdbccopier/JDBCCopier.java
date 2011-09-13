@@ -23,10 +23,11 @@ import javax.swing.JTextArea;
 
 import me.alabor.jdbccopier.copier.Copier;
 import me.alabor.jdbccopier.copier.CopierTask;
-import me.alabor.jdbccopier.copier.PooledCopier;
+import me.alabor.jdbccopier.copier.factory.CopierFactory;
+import me.alabor.jdbccopier.copier.factory.FilterFactory;
 import me.alabor.jdbccopier.copier.listener.ConsoleCopierListener;
 import me.alabor.jdbccopier.database.Database;
-import me.alabor.jdbccopier.database.MSSQLDatabase;
+import me.alabor.jdbccopier.database.factory.DatabaseFactory;
 import me.alabor.jdbccopier.database.meta.Table;
 import me.alabor.jdbccopier.ui.WorkerStatusPanel;
 import me.alabor.jdbccopier.ui.layout.ListLayout;
@@ -44,8 +45,10 @@ public class JDBCCopier {
 		String includes = properties.getProperty("include", "");
 		String excludes = properties.getProperty("exclude", "");
 		int maxWorkers = new Integer(properties.getProperty("maxworkers","-1")).intValue();
-		List<String> includeTables = getNameFilter(includes);
-		List<String> excludeTables = getNameFilter(excludes);
+		
+		FilterFactory filterFactory = new FilterFactory();
+		List<String> includeTables = filterFactory.createFilterList(includes);
+		List<String> excludeTables = filterFactory.createFilterList(excludes);
 		
 		// Check config:
 		if(sourceType.length() == 0 || sourceConnectionString.length() == 0
@@ -63,26 +66,28 @@ public class JDBCCopier {
 		
 		/* Run: */
 		try {
-			Database it = new MSSQLDatabase(sourceConnectionString);
-			it.connect();
+			DatabaseFactory databaseFactory = new DatabaseFactory();
+			Database sourceDatabase = databaseFactory.createDatabase(sourceType, sourceConnectionString);
 			
-			Queue<Table> pool = new ConcurrentLinkedQueue<Table>(it.getTables(includeTables, excludeTables));
+			sourceDatabase.connect();
+			Queue<Table> pool = new ConcurrentLinkedQueue<Table>(sourceDatabase.getTables(includeTables, excludeTables));
 			final List<Thread> workers = new ArrayList<Thread>(maxWorkers+1);
 			List<WorkerStatusPanel> statusPanels = new ArrayList<WorkerStatusPanel>(maxWorkers+1);
 			ConsoleCopierListener console = new ConsoleCopierListener(false);
 			
 			/* Create Workers & Statuspanels: */
-			for(int i = 0; i < maxWorkers; i++) {
-				Database sourceDatabase = new MSSQLDatabase(sourceConnectionString);
-				Database targetDatabase = new MSSQLDatabase(targetConnectionString);
-				Copier pooledCopier = new PooledCopier(sourceDatabase, targetDatabase, pool);
+			CopierFactory copierFactory = new CopierFactory(databaseFactory);
+			List<Copier> pooledCopiers = copierFactory.createPooledCopiers(sourceType, sourceConnectionString, targetType, targetConnectionString, maxWorkers, pool);
+			
+			for (Copier copier : pooledCopiers) {
 				WorkerStatusPanel statusPanel = new WorkerStatusPanel();
 				
-				pooledCopier.addCopierListener(statusPanel);
-				pooledCopier.addCopierListener(console);
-				workers.add(new Thread(new CopierTask(pooledCopier)));
-				statusPanels.add(statusPanel);
+				copier.addCopierListener(statusPanel);
+				copier.addCopierListener(console);
+				workers.add(new Thread(new CopierTask(copier)));
+				statusPanels.add(statusPanel);				
 			}
+			
 			
 			/* Create and show frame: */
 			JFrame frame = new JFrame("JDBCCopier");
@@ -120,26 +125,6 @@ public class JDBCCopier {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	/**
-	 * Splits a comma seperated {@link String} with {@link Table}-names and
-	 * returns a {@link List} with each.
-	 * 
-	 * @param nameFilters
-	 * @return
-	 */
-	private static List<String> getNameFilter(String nameFilters) {
-		String[] raw = nameFilters.split(",");
-		List<String> filters = new ArrayList<String>(raw.length);
-		
-		if(raw.length > 0 && raw[0].length() > 0) {
-			for (String filter : raw) {
-				filters.add(filter);
-			}			
-		}
-		
-		return filters;
 	}
 	
 	/**

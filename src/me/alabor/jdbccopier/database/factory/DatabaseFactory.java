@@ -7,6 +7,15 @@ import me.alabor.jdbccopier.database.Database;
 
 public class DatabaseFactory {
 
+	/**
+	 * Creates a {@link Database} instance for the given type using the provided
+	 * connection string.
+	 * 
+	 * @param databaseType
+	 * @param connectionString
+	 * @see Database
+	 * @return
+	 */
 	public Database createDatabase(String databaseType, String connectionString) {
 		Database database = null;
 		
