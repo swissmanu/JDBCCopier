@@ -41,15 +41,17 @@ public abstract class AbstractCopier implements Copier {
 				
 				fireStartCopyTable(table, totalRows);
 				
+				source.beforeTableCopy(table, Mode.Source);
 				target.beforeTableCopy(table, Mode.Target);
 				copyTableContents(table);
 				target.afterTableCopy(table, Mode.Target);
+				source.afterTableCopy(table, Mode.Source);
 				
-				fireEndCopyTable(table);				
+				fireEndCopyTable(table);
 			}
 			
-			source.afterCopy(Mode.Source);
 			target.afterCopy(Mode.Target);
+			source.afterCopy(Mode.Source);
 		} else {
 			fireError(null, new Exception("Connection problems"));
 		}
