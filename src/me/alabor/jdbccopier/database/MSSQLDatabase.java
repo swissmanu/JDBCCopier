@@ -103,7 +103,6 @@ public class MSSQLDatabase implements Database {
 	public boolean beforeTableCopy(Table table, Mode mode) {
 		boolean result = true;
 		if(mode == Mode.Target) {
-			//result = enableConstraints(table, false);
 			result = setIdentityInsert(table, true);
 		}
 		
@@ -114,7 +113,6 @@ public class MSSQLDatabase implements Database {
 	public boolean afterTableCopy(Table table, Mode mode) {
 		boolean result = true;
 		if(mode == Mode.Target) {
-			//result = enableConstraints(table, true);
 			result = setIdentityInsert(table, false);
 		}
 		
@@ -127,10 +125,24 @@ public class MSSQLDatabase implements Database {
 	}
 	
 	@Override
-	public boolean beforeCopy(Mode mode) { return true; }
+	public boolean beforeCopy(Mode mode) {
+		boolean result = true;
+		if(mode == Mode.Target) {
+			result = enableConstraints(false);
+		}
+		
+		return result;
+	}
 	
 	@Override
-	public boolean afterCopy(Mode mode) { return true; }
+	public boolean afterCopy(Mode mode) {
+		boolean result = true;
+		if(mode == Mode.Target) {
+			result = enableConstraints(true);
+		}
+		
+		return result;
+	}
 	
 	@Override
 	public PreparedStatement buildPreparedInsertStatement(Table table) throws Exception {
@@ -239,15 +251,15 @@ public class MSSQLDatabase implements Database {
 	}
 	
 	/**
-	 * Enables or disables constraints on the sql server.
+	 * Enables or disables constraints on all tables for this sql server.
 	 * 
 	 * @param enabled
 	 * @return
 	 */
-	private boolean enableConstraints(Table table, boolean enabled) {
+	private boolean enableConstraints(boolean enabled) {
 		boolean result = true;
-		String query = "ALTER TABLE " + buildTableName(table) + " NOCHECK CONSTRAINT all";
-		if(enabled) query = "ALTER TABLE " + buildTableName(table) + " WITH CHECK CHECK CONSTRAINT all";
+		String query = "EXEC sp_msforeachtable \"ALTER TABLE ? NOCHECK CONSTRAINT all\"";
+		if(enabled) query = "EXEC sp_msforeachtable \"ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all\"";
 		
 		try {
 			Statement statement = getConnection().createStatement();
