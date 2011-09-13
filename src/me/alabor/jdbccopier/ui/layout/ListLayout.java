@@ -27,7 +27,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package me.alabor.jdbccopier.ui;
+package me.alabor.jdbccopier.ui.layout;
 
 import java.awt.Component;
 import java.awt.Container;

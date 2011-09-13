@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import me.alabor.jdbccopier.copier.Copier;
 import me.alabor.jdbccopier.copier.CopierTask;
@@ -27,8 +28,8 @@ import me.alabor.jdbccopier.copier.listener.ConsoleCopierListener;
 import me.alabor.jdbccopier.database.Database;
 import me.alabor.jdbccopier.database.MSSQLDatabase;
 import me.alabor.jdbccopier.database.meta.Table;
-import me.alabor.jdbccopier.ui.ListLayout;
 import me.alabor.jdbccopier.ui.WorkerStatusPanel;
+import me.alabor.jdbccopier.ui.layout.ListLayout;
 
 
 public class JDBCCopier {
@@ -85,7 +86,7 @@ public class JDBCCopier {
 			
 			/* Create and show frame: */
 			JFrame frame = new JFrame("JDBCCopier");
-			frame.setMinimumSize(new Dimension(600,500));
+			frame.setMinimumSize(new Dimension(600,800));
 			frame.setSize(frame.getMinimumSize());
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			
@@ -104,11 +105,14 @@ public class JDBCCopier {
 			for (WorkerStatusPanel workerStatusPanel : statusPanels) {
 				statusContainer.add(workerStatusPanel);
 			}
+			
+			JTextArea txtProperties = new JTextArea(properties.toString());
 
 			JPanel contentPane = new JPanel(new BorderLayout());
 			contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 			contentPane.add(btnStart, BorderLayout.NORTH);
 			contentPane.add(new JScrollPane(statusContainer), BorderLayout.CENTER);
+			contentPane.add(new JScrollPane(txtProperties), BorderLayout.SOUTH);
 			
 			frame.setContentPane(contentPane);
 			frame.setVisible(true);
