@@ -1,8 +1,10 @@
-package me.alabor.jdbccopier.copier.factory;
+package me.alabor.jdbccopier.test;
 
 import java.util.List;
 
 import junit.framework.Assert;
+
+import me.alabor.jdbccopier.copier.factory.FilterFactory;
 
 import org.junit.Test;
 
